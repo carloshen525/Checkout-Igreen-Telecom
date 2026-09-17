@@ -1,0 +1,1042 @@
+/* ==========================================================================
+   iGreen Telecom - Checkout Inteligente de Portabilidade
+   Design System Estilo Fintech / App (Nubank, Vivo, Mercado Pago)
+   ========================================================================== */
+
+/* --- Tokens de Design & Variáveis --- */
+:root {
+  --color-primary: #00E575;
+  --color-primary-hover: #00FF85;
+  --color-primary-glow: rgba(0, 229, 117, 0.35);
+  --color-primary-subtle: rgba(0, 229, 117, 0.12);
+
+  --color-bg-app: #080C11;
+  --color-bg-surface: #101622;
+  --color-bg-input: #131B29;
+  --color-bg-card: #0E1420;
+
+  --color-border: #1E2B3E;
+  --color-border-active: #00E575;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+
+  --color-text-main: #FFFFFF;
+  --color-text-muted: #94A3B8;
+  --color-text-light: #CBD5E1;
+  --color-text-dim: #64748B;
+
+  --color-whatsapp: #25D366;
+  --color-whatsapp-hover: #20BD5A;
+  --color-whatsapp-glow: rgba(37, 211, 102, 0.45);
+
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Reset & Configurações Básicas --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-app);
+  color: var(--color-text-main);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ==========================================================================
+   FASE 1: TELA DE OFERTA MINIMALISTA (SEM DISTRAÇÕES)
+   ========================================================================== */
+.phase-offer {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px 32px;
+  background: radial-gradient(circle at 50% -10%, rgba(0, 229, 117, 0.14) 0%, rgba(8, 12, 17, 1) 75%);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.phase-offer.is-hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  display: none !important;
+}
+
+.offer-ambient-glow {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 229, 117, 0.18) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.offer-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header da Oferta */
+.offer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 4px;
+}
+
+.brand-logo__img {
+  height: 48px;
+  width: auto;
+  max-width: 175px;
+  object-fit: contain;
+  display: block;
+}
+
+.secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 229, 117, 0.1);
+  border: 1px solid rgba(0, 229, 117, 0.25);
+  color: var(--color-primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: var(--radius-full);
+}
+
+/* Corpo da Oferta */
+.offer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.offer-title {
+  font-size: 1.95rem;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: #FFFFFF;
+}
+
+@media (min-width: 480px) {
+  .offer-title {
+    font-size: 2.35rem;
+  }
+}
+
+.highlight-green {
+  background: linear-gradient(135deg, #00FF85 0%, #00E575 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.offer-subtitle {
+  font-size: 1.02rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+/* Grid de Benefícios da Oferta */
+.offer-benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.benefit-item {
+  background: rgba(16, 22, 34, 0.8);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.benefit-icon-box {
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary-subtle);
+  border: 1px solid rgba(0, 229, 117, 0.25);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.benefit-icon-box svg {
+  display: block;
+}
+
+.benefit-desc {
+  display: flex;
+  flex-direction: column;
+}
+
+.benefit-desc strong {
+  font-size: 0.88rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.benefit-desc span {
+  font-size: 0.74rem;
+  color: var(--color-text-dim);
+}
+
+/* Card de Transparência do Plano */
+.offer-plan-card {
+  background: var(--color-bg-surface);
+  border: 1px solid rgba(0, 229, 117, 0.3);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6);
+}
+
+.plan-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-transparency-title {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.plan-badge-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.plan-pricing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plan-title-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-name {
+  font-size: 1.15rem;
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+.plan-sub {
+  font-size: 0.78rem;
+  color: var(--color-text-dim);
+}
+
+.plan-price-col {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.plan-currency {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.plan-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.plan-period {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+/* Divisor e Lista de Benefícios do Plano */
+.plan-divider-line {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0 6px;
+}
+
+.plan-benefits-grid-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-benefit-point {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--color-text-light);
+  line-height: 1.3;
+}
+
+.plan-benefit-point strong {
+  color: #FFFFFF;
+}
+
+.plan-check-badge {
+  width: 18px;
+  height: 18px;
+  background: rgba(0, 229, 117, 0.15);
+  border: 1px solid rgba(0, 229, 117, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plan-check-badge svg {
+  display: block;
+}
+
+/* Rodapé com CTA da Oferta */
+.offer-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.offer-footer-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  text-align: center;
+}
+
+.offer-footer-note svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   FASE 2: CHECKOUT INTELIGENTE APP-LIKE (FULLSCREEN, 100DVH, SEM SCROLL)
+   ========================================================================== */
+.phase-checkout {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  background-color: var(--color-bg-app);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.phase-checkout.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Barra Superior Fixa do App */
+.checkout-app-header {
+  flex-shrink: 0;
+  background: var(--color-bg-app);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 12px 20px 10px;
+}
+
+.checkout-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  max-width: 540px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.app-nav-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border-subtle);
+  color: #FFFFFF;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.app-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.app-nav-btn:active {
+  transform: scale(0.92);
+}
+
+.step-counter-text {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.3px;
+}
+
+.header-logo-mini {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img-mini {
+  height: 28px;
+  width: auto;
+  max-width: 95px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Barra de Progresso Visual */
+.app-progress-track {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.app-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00C853, #00E575);
+  border-radius: var(--radius-full);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(0, 229, 117, 0.6);
+}
+
+/* Indicador de Tempo */
+.app-time-badge {
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.app-time-badge svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.app-time-badge span {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* Main do Checkout App */
+.checkout-app-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#appCheckoutForm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Etapa Individual (100% da tela mobile) */
+.checkout-step {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 24px 20px 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.checkout-step.active {
+  display: flex;
+  animation: slideStepIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideStepIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-content-scrollable {
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+.step-pill {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 14px;
+}
+
+.step-heading {
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+@media (min-width: 480px) {
+  .step-heading {
+    font-size: 1.85rem;
+  }
+}
+
+.step-subheading {
+  font-size: 0.94rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Inputs e Campos do App */
+.field-box {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  margin-bottom: 6px;
+}
+
+.field-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon-left {
+  position: absolute;
+  left: 16px;
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.app-input {
+  width: 100%;
+  height: 56px;
+  background-color: var(--color-bg-input);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 18px;
+  color: #FFFFFF;
+  font-size: 1.12rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+.field-icon-left + .app-input {
+  padding-left: 48px;
+}
+
+.app-input::placeholder {
+  color: #4B586E;
+  font-weight: 400;
+}
+
+.app-input:focus {
+  border-color: var(--color-primary);
+  background-color: #162032;
+  box-shadow: 0 0 0 3px rgba(0, 229, 117, 0.18);
+}
+
+.app-input.is-invalid {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px var(--color-danger-bg);
+}
+
+.field-error-msg {
+  display: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-top: 5px;
+}
+
+.field-error-msg.visible {
+  display: block;
+}
+
+.field-hint {
+  font-size: 0.76rem;
+  color: var(--color-text-dim);
+  margin-top: 4px;
+}
+
+.field-row-2 {
+  display: flex;
+  gap: 12px;
+}
+
+.field-row-2 > * {
+  flex: 1;
+}
+
+/* Spinner do CEP */
+.input-spinner {
+  position: absolute;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Quick Chips para Operadora (Etapa 2) */
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.chip-btn {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-light);
+  padding: 9px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.chip-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chip-btn.selected {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 229, 117, 0.25);
+}
+
+/* Cards de Seleção de Chip (Etapa 3) */
+.cards-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card-radio-item {
+  position: relative;
+  display: block;
+  background: var(--color-bg-input);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.card-radio-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-radio-item.active {
+  border-color: var(--color-primary);
+  background: rgba(0, 229, 117, 0.05);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 8px 24px -6px rgba(0, 229, 117, 0.25);
+}
+
+.card-radio-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-radio-bullet {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.card-radio-item.active .card-radio-bullet {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.card-radio-item.active .card-radio-bullet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #041B0D;
+  border-radius: 50%;
+}
+
+.badge-accent {
+  background: rgba(0, 229, 117, 0.15);
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.badge-subtle {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.card-radio-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.chip-svg-badge {
+  flex-shrink: 0;
+}
+
+.card-radio-text {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Nota de Segurança (Etapa 6) */
+.security-note-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 229, 117, 0.06);
+  border: 1px solid rgba(0, 229, 117, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+
+.security-note-box svg {
+  flex-shrink: 0;
+}
+
+.security-note-box span {
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+  line-height: 1.4;
+}
+
+/* Rodapé das Etapas (Botão Continuar Fixo na Base) */
+.step-footer {
+  padding-top: 16px;
+  flex-shrink: 0;
+}
+
+.step-footer.flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Botão Principal Estilo App */
+.btn-primary-app {
+  width: 100%;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #00FF85 0%, #00E575 50%, #00C853 100%);
+  color: #041B0D;
+  font-weight: 800;
+  font-size: 1.08rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 28px -4px var(--color-primary-glow);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.btn-primary-app:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-primary-app:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   TELA DE CONFIRMAÇÃO FINAL (PRÉ-WHATSAPP - SEM EMOJIS)
+   ========================================================================== */
+.success-app-badge {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 229, 117, 0.12);
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0, 229, 117, 0.35);
+  animation: popBadge 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-badge-glow {
+  position: absolute;
+  inset: -6px;
+  background: radial-gradient(circle, rgba(0, 229, 117, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulseGlow 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.success-svg-check {
+  display: block;
+}
+
+@keyframes popBadge {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.12); }
+}
+
+.success-heading {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.success-primary-msg {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.success-sub-msg {
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+}
+
+/* Card Resumo Clean */
+.summary-clean-box {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.summary-clean-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-clean-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.summary-clean-row span {
+  color: var(--color-text-muted);
+}
+
+.summary-clean-row strong {
+  color: #FFFFFF;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.text-green {
+  color: var(--color-primary) !important;
+}
+
+/* Botão Verde Grande "Continuar no WhatsApp" */
+.btn-whatsapp-app {
+  width: 100%;
+  height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #25D366 0%, #20BD5A 100%);
+  color: #FFFFFF;
+  font-size: 1.15rem;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 12px 30px -4px var(--color-whatsapp-glow);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.btn-whatsapp-app:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-whatsapp-app:active {
+  transform: scale(0.98);
+}
+
+.btn-app-edit {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px;
+  transition: color var(--transition-fast);
+}
+
+.btn-app-edit:hover {
+  color: #FFFFFF;
+}
