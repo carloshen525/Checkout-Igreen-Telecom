@@ -192,6 +192,10 @@ button, input, select, textarea {
   backdrop-filter: blur(10px);
 }
 
+.benefit-item-full {
+  grid-column: span 2;
+}
+
 .benefit-icon-box {
   width: 40px;
   height: 40px;

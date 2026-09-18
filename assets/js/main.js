@@ -9,7 +9,7 @@
   // =========================================================================
   // 1. CONFIGURAÇÕES GERAIS
   // =========================================================================
-  // Altere para o WhatsApp oficial de atendimento (DDI 55 + DDD + Número)
+  // WhatsApp oficial de atendimento (DDI 55 + DDD + Número: 35 9875-4516)
   const WHATSAPP_PHONE = '553598754516';
 
   // =========================================================================
@@ -58,18 +58,10 @@
     operadoraAtual: '',
     tipoChip: 'Chip Físico',
     nomeCompleto: '',
-    email: '',
-    cep: '',
-    logradouro: '',
-    numeroResidencial: '',
-    complemento: '',
-    bairro: '',
-    cidade: '',
-    uf: '',
-    cpf: ''
+    email: ''
   };
 
-  let currentStep = 1; // 1 to 6 or 'success'
+  let currentStep = 1; // 1 a 4 ou 'success'
 
   // Elementos do DOM
   const phaseOffer = document.getElementById('phaseOffer');
@@ -103,7 +95,7 @@
   }
 
   // =========================================================================
-  // 5. MÁSCARAS DE ENTRADA (TELEFONE, CEP, CPF)
+  // 5. MÁSCARA DE TELEFONE
   // =========================================================================
   function maskPhone(val) {
     let digits = val.replace(/\D/g, '').substring(0, 11);
@@ -119,46 +111,13 @@
     return '';
   }
 
-  function maskCEP(val) {
-    let digits = val.replace(/\D/g, '').substring(0, 8);
-    return digits.replace(/^(\d{5})(\d{1,3})$/, '$1-$2');
-  }
-
-  function maskCPF(val) {
-    let digits = val.replace(/\D/g, '').substring(0, 11);
-    return digits
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  }
-
   function setupInputMasks() {
     const telInput = document.getElementById('numeroAtual');
-    const cepInput = document.getElementById('cep');
-    const cpfInput = document.getElementById('cpf');
 
     if (telInput) {
       telInput.addEventListener('input', (e) => {
         e.target.value = maskPhone(e.target.value);
         clearError('numeroAtual');
-      });
-    }
-
-    if (cepInput) {
-      cepInput.addEventListener('input', (e) => {
-        e.target.value = maskCEP(e.target.value);
-        clearError('cep');
-        const digits = e.target.value.replace(/\D/g, '');
-        if (digits.length === 8) {
-          fetchViaCEP(digits);
-        }
-      });
-    }
-
-    if (cpfInput) {
-      cpfInput.addEventListener('input', (e) => {
-        e.target.value = maskCPF(e.target.value);
-        clearError('cpf');
       });
     }
 
@@ -171,33 +130,8 @@
   }
 
   // =========================================================================
-  // 6. VALIDAÇÕES REAIS (CPF, TELEFONE, EMAIL)
+  // 6. VALIDAÇÕES (TELEFONE, EMAIL)
   // =========================================================================
-  function validateCPF(cpfStr) {
-    const clean = cpfStr.replace(/\D/g, '');
-    if (clean.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(clean)) return false;
-
-    let sum = 0;
-    let rest;
-    for (let i = 1; i <= 9; i++) {
-      sum += parseInt(clean.substring(i - 1, i), 10) * (11 - i);
-    }
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    if (rest !== parseInt(clean.substring(9, 10), 10)) return false;
-
-    sum = 0;
-    for (let i = 1; i <= 10; i++) {
-      sum += parseInt(clean.substring(i - 1, i), 10) * (12 - i);
-    }
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    if (rest !== parseInt(clean.substring(10, 11), 10)) return false;
-
-    return true;
-  }
-
   function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).trim().toLowerCase());
@@ -231,59 +165,7 @@
   }
 
   // =========================================================================
-  // 7. BUSCA AUTOMÁTICA DE CEP (VIACEP)
-  // =========================================================================
-  async function fetchViaCEP(cepDigits) {
-    const spinner = document.getElementById('cepSpinner');
-    const hint = document.getElementById('cepHint');
-    const logradouroInput = document.getElementById('logradouro');
-    const bairroInput = document.getElementById('bairro');
-    const cidadeInput = document.getElementById('cidade');
-    const ufInput = document.getElementById('uf');
-    const numeroInput = document.getElementById('numeroResidencial');
-
-    if (spinner) spinner.style.display = 'block';
-    if (hint) hint.textContent = 'Localizando endereço...';
-
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepDigits}/json/`);
-      const data = await response.json();
-
-      if (data.erro) {
-        if (hint) hint.textContent = 'CEP não encontrado. Preencha os dados abaixo:';
-        return;
-      }
-
-      if (logradouroInput && data.logradouro) {
-        logradouroInput.value = data.logradouro;
-        clearError('logradouro');
-      }
-      if (bairroInput && data.bairro) {
-        bairroInput.value = data.bairro;
-        clearError('bairro');
-      }
-      if (cidadeInput && data.localidade) {
-        cidadeInput.value = data.localidade;
-        clearError('cidade');
-      }
-      if (ufInput && data.uf) {
-        ufInput.value = data.uf;
-        clearError('uf');
-      }
-
-      if (hint) hint.textContent = 'Endereço encontrado! Agora informe o número da residência.';
-      if (numeroInput) numeroInput.focus();
-
-    } catch (err) {
-      console.warn('Falha ao buscar CEP:', err);
-      if (hint) hint.textContent = 'Preencha o endereço nos campos abaixo:';
-    } finally {
-      if (spinner) spinner.style.display = 'none';
-    }
-  }
-
-  // =========================================================================
-  // 8. CONTROLE DOS CHIPS E SELETORES
+  // 7. CONTROLE DOS CHIPS E SELETORES
   // =========================================================================
   function setupInteractiveOptions() {
     // Chips de operadora rápida (Etapa 2)
@@ -306,18 +188,20 @@
       });
     });
 
-    operadoraInput.addEventListener('input', () => {
-      const typed = operadoraInput.value.trim().toLowerCase();
-      chips.forEach((c) => {
-        if (c.getAttribute('data-carrier').toLowerCase() === typed) {
-          c.classList.add('selected');
-        } else {
-          c.classList.remove('selected');
-        }
+    if (operadoraInput) {
+      operadoraInput.addEventListener('input', () => {
+        const typed = operadoraInput.value.trim().toLowerCase();
+        chips.forEach((c) => {
+          if (c.getAttribute('data-carrier').toLowerCase() === typed) {
+            c.classList.add('selected');
+          } else {
+            c.classList.remove('selected');
+          }
+        });
       });
-    });
+    }
 
-    // Cards de opção de chip: eSIM vs Físico (Etapa 3)
+    // Cards de opção de chip: Físico vs eSIM (Etapa 3)
     const radioCards = document.querySelectorAll('.card-radio-item');
     radioCards.forEach((card) => {
       const radio = card.querySelector('input[type="radio"]');
@@ -333,7 +217,7 @@
   }
 
   // =========================================================================
-  // 9. VALIDAÇÃO INDIVIDUAL DE CADA ETAPA
+  // 8. VALIDAÇÃO INDIVIDUAL DE CADA ETAPA (4 ETAPAS)
   // =========================================================================
   function validateStep(stepNum) {
     let isValid = true;
@@ -390,77 +274,6 @@
       }
     }
 
-    else if (stepNum === 5) {
-      const cepInput = document.getElementById('cep');
-      const logradouroInput = document.getElementById('logradouro');
-      const numeroInput = document.getElementById('numeroResidencial');
-      const complementoInput = document.getElementById('complemento');
-      const bairroInput = document.getElementById('bairro');
-      const cidadeInput = document.getElementById('cidade');
-      const ufInput = document.getElementById('uf');
-
-      if (cepInput.value.replace(/\D/g, '').length !== 8) {
-        showError('cep', 'Informe um CEP válido com 8 dígitos.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = cepInput;
-      } else {
-        formData.cep = cepInput.value.trim();
-      }
-
-      if (logradouroInput.value.trim().length < 3) {
-        showError('logradouro', 'Informe a rua / logradouro.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = logradouroInput;
-      } else {
-        formData.logradouro = logradouroInput.value.trim();
-      }
-
-      if (numeroInput.value.trim().length === 0) {
-        showError('numeroResidencial', 'Informe o número.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = numeroInput;
-      } else {
-        formData.numeroResidencial = numeroInput.value.trim();
-      }
-
-      if (bairroInput.value.trim().length < 2) {
-        showError('bairro', 'Informe o bairro.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = bairroInput;
-      } else {
-        formData.bairro = bairroInput.value.trim();
-      }
-
-      if (cidadeInput.value.trim().length < 2) {
-        showError('cidade', 'Informe a cidade.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = cidadeInput;
-      } else {
-        formData.cidade = cidadeInput.value.trim();
-      }
-
-      if (ufInput.value.trim().length < 2) {
-        showError('uf', 'UF.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = ufInput;
-      } else {
-        formData.uf = ufInput.value.trim().toUpperCase();
-      }
-
-      formData.complemento = complementoInput ? complementoInput.value.trim() : '';
-    }
-
-    else if (stepNum === 6) {
-      const cpfInput = document.getElementById('cpf');
-      if (!validateCPF(cpfInput.value)) {
-        showError('cpf', 'CPF inválido. Verifique os números digitados.');
-        isValid = false;
-        fieldToFocus = cpfInput;
-      } else {
-        formData.cpf = cpfInput.value.trim();
-      }
-    }
-
     if (!isValid && fieldToFocus) {
       fieldToFocus.focus();
     }
@@ -469,7 +282,7 @@
   }
 
   // =========================================================================
-  // 10. TRANSIÇÃO DE TELAS NO CHECKOUT (1 a 6 e TELA DE SUCESSO)
+  // 9. TRANSIÇÃO DE TELAS NO CHECKOUT (1 a 4 e TELA DE SUCESSO)
   // =========================================================================
   function goToStep(target) {
     const allSteps = document.querySelectorAll('.checkout-step');
@@ -490,9 +303,9 @@
       const targetStep = document.getElementById(`appStep${num}`);
       if (targetStep) targetStep.classList.add('active');
 
-      // Atualiza contador e barra de progresso
-      const progressPercentage = Math.round((num / 6) * 100);
-      stepCounterText.textContent = `Etapa ${num} de 6`;
+      // Atualiza contador e barra de progresso (4 etapas = 25%, 50%, 75%, 100%)
+      const progressPercentage = Math.round((num / 4) * 100);
+      stepCounterText.textContent = `Etapa ${num} de 4`;
       appProgressFill.style.width = `${progressPercentage}%`;
 
       // Autofoco inteligente no primeiro input disponível
@@ -504,23 +317,21 @@
   }
 
   function populateSummaryBox() {
+    const sumNome = document.getElementById('sumNome');
+    const sumEmail = document.getElementById('sumEmail');
     const sumNumero = document.getElementById('sumNumero');
     const sumOperadora = document.getElementById('sumOperadora');
     const sumChip = document.getElementById('sumChip');
-    const sumNome = document.getElementById('sumNome');
-    const sumCpf = document.getElementById('sumCpf');
-    const sumCidadeUf = document.getElementById('sumCidadeUf');
 
+    if (sumNome) sumNome.textContent = formData.nomeCompleto || '-';
+    if (sumEmail) sumEmail.textContent = formData.email || '-';
     if (sumNumero) sumNumero.textContent = formData.numeroAtual || '-';
     if (sumOperadora) sumOperadora.textContent = formData.operadoraAtual || '-';
     if (sumChip) sumChip.textContent = formData.tipoChip || '-';
-    if (sumNome) sumNome.textContent = formData.nomeCompleto || '-';
-    if (sumCpf) sumCpf.textContent = formData.cpf || '-';
-    if (sumCidadeUf) sumCidadeUf.textContent = `${formData.cidade}/${formData.uf}` || '-';
   }
 
   // =========================================================================
-  // 11. GESTÃO DOS BOTÕES DE NAVEGAÇÃO E TECLADO ENTER
+  // 10. GESTÃO DOS BOTÕES DE NAVEGAÇÃO E TECLADO ENTER
   // =========================================================================
   function setupNavigationControls() {
     // Botão "Começar minha portabilidade" (Fase 1 -> Fase 2)
@@ -560,7 +371,7 @@
     if (btnStepBack) {
       btnStepBack.addEventListener('click', () => {
         if (currentStep === 'success') {
-          goToStep(6);
+          goToStep(4);
         } else if (currentStep === 1) {
           returnToOfferPhase();
         } else if (typeof currentStep === 'number' && currentStep > 1) {
@@ -579,46 +390,31 @@
   }
 
   // =========================================================================
-  // 12. FINALIZAÇÃO NO WHATSAPP (EVENTO LEAD)
+  // 11. FINALIZAÇÃO NO WHATSAPP (EVENTO LEAD)
   // =========================================================================
   function setupWhatsAppTrigger() {
     const btnWhatsApp = document.getElementById('btnContinuarWhatsApp');
     if (!btnWhatsApp) return;
 
     btnWhatsApp.addEventListener('click', () => {
-      // 1. Disparo do Evento LEAD no Meta Pixel (Evento Principal de Otimização)
+      // 1. Disparo do Evento LEAD no Meta Pixel
       trackMetaEvent('Lead', {
-        content_name: 'Solicitação Portabilidade iGreen Telecom'
+        content_name: 'Lead Portabilidade iGreen Telecom'
       });
 
-      // 2. Montagem do endereço completo
-      const enderecoCompleto = `${formData.logradouro}, ${formData.numeroResidencial}${formData.complemento ? ' - ' + formData.complemento : ''} - ${formData.bairro}, ${formData.cidade} - ${formData.uf}`;
-
-      // 3. Montagem da mensagem no formato exato solicitado:
+      // 2. Montagem da mensagem formatada no padrão exato solicitado
       const textMessage = 
-`Olá!
-
-Quero realizar minha portabilidade para a iGreen Telecom.
+`Olá! Quero fazer minha portabilidade para a iGreen Telecom.
 
 Nome: ${formData.nomeCompleto}
-
-CPF: ${formData.cpf}
-
 Email: ${formData.email}
-
-Endereço: ${enderecoCompleto}
-
-CEP: ${formData.cep}
-
 Número para portabilidade: ${formData.numeroAtual}
-
 Operadora atual: ${formData.operadoraAtual}
+Tipo de chip escolhido: ${formData.tipoChip}
 
-Tipo de chip: ${formData.tipoChip}
+Gostaria de finalizar minha ativação.`;
 
-Aguardo a confirmação para ativação.`;
-
-      // 4. URL codificada e redirecionamento
+      // 3. URL codificada e redirecionamento
       const encodedMsg = encodeURIComponent(textMessage);
       const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
 
@@ -627,7 +423,7 @@ Aguardo a confirmação para ativação.`;
   }
 
   // =========================================================================
-  // 13. INICIALIZAÇÃO
+  // 12. INICIALIZAÇÃO
   // =========================================================================
   document.addEventListener('DOMContentLoaded', () => {
     trackViewContent();
