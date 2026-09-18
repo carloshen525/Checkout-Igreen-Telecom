@@ -244,7 +244,7 @@
       <!-- Botão CTA Principal da Fase 1 -->
       <footer class="offer-footer">
         <button type="button" class="btn-primary-app btn-glow" id="btnStartCheckout">
-          <span>Começar minha portabilidade</span>
+          <span>Quero ganhar meus 11GB grátis</span>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -273,270 +273,167 @@
 
 
   <!-- ==================================================================== -->
-  <!-- FASE 2: CHECKOUT INTELIGENTE APP-LIKE (FULLSCREEN, SEM SCROLL)       -->
+  <!-- MODAL / OVERLAY: FORMULÁRIO DE PORTABILIDADE (TELA ÚNICA)            -->
   <!-- ==================================================================== -->
-  <div class="phase-checkout" id="phaseCheckout" aria-hidden="true">
-    
-    <!-- Barra Superior Fixa do App -->
-    <header class="checkout-app-header">
-      <div class="checkout-header-inner">
-        <button type="button" class="app-nav-btn" id="btnStepBack" aria-label="Voltar">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="15 18 9 12 15 6"></polyline>
+  <div class="lead-modal-backdrop" id="leadModalBackdrop" aria-hidden="true">
+    <div class="lead-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="lead-modal-card">
+        
+        <!-- Botão Fechar Modal -->
+        <button type="button" class="lead-modal-close" id="btnCloseModal" aria-label="Fechar formulário">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
 
-        <div class="checkout-progress-info">
-          <span class="step-counter-text" id="stepCounterText">Etapa 1 de 4</span>
+        <!-- Cabeçalho do Modal -->
+        <div class="lead-modal-header">
+          <div class="lead-modal-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00E575" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="3"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            <span>Portabilidade 100% Digital</span>
+          </div>
+          <h2 class="lead-modal-title" id="modalTitle">Ative seus 11GB grátis</h2>
+          <p class="lead-modal-subtitle">Preencha os dados abaixo para continuar sua solicitação via WhatsApp.</p>
         </div>
 
-        <div class="header-logo-mini">
-          <img src="assets/images/logo-igreen-clean.png" alt="iGreen Telecom" class="logo-img-mini" width="105" height="36">
-        </div>
-      </div>
-
-      <!-- Barra de Progresso Visual -->
-      <div class="app-progress-track">
-        <div class="app-progress-fill" id="appProgressFill" style="width: 25%;"></div>
-      </div>
-
-      <!-- Indicador de Tempo Estimado com Ícone SVG -->
-      <div class="app-time-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-        <span>Leva menos de 1 minuto</span>
-      </div>
-    </header>
-
-    <!-- Container Central das Etapas (100% da tela) -->
-    <main class="checkout-app-main">
-      <form id="appCheckoutForm" novalidate onsubmit="return false;">
-
-        <!-- ETAPA 1: NÚMERO QUE DESEJA MANTER -->
-        <section class="checkout-step active" id="appStep1" data-step="1">
-          <div class="step-content">
-            <span class="step-pill">Passo inicial</span>
-            <h2 class="step-heading">Qual número deseja manter?</h2>
-            <p class="step-subheading">Seu número continuará exatamente o mesmo, sem trocar seus contatos.</p>
-
-            <div class="field-box">
-              <label for="numeroAtual" class="field-label">Número atual com DDD</label>
-              <div class="field-input-wrap">
-                <span class="field-icon-left">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="3"></rect>
-                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                  </svg>
-                </span>
-                <input type="tel" id="numeroAtual" class="app-input" placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel" autofocus>
-              </div>
-              <span class="field-error-msg" id="err-numeroAtual"></span>
+        <!-- Formulário em Tela Única -->
+        <form id="leadPortabilidadeForm" novalidate onsubmit="return false;">
+          
+          <!-- Campo 1: Nome Completo -->
+          <div class="modal-field-box">
+            <label for="nomeCompleto" class="modal-field-label">Nome completo <span class="req">*</span></label>
+            <div class="modal-input-wrap">
+              <span class="modal-input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" id="nomeCompleto" class="modal-input" placeholder="Ex: Maria Silva Santos" autocomplete="name" required>
             </div>
+            <span class="field-error-msg" id="err-nomeCompleto"></span>
           </div>
 
-          <div class="step-footer">
-            <button type="button" class="btn-primary-app btn-step-continue" data-step-target="2">
-              <span>Continuar</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </section>
-
-        <!-- ETAPA 2: OPERADORA ATUAL (CAMPO ABERTO) -->
-        <section class="checkout-step" id="appStep2" data-step="2">
-          <div class="step-content">
-            <span class="step-pill">Portabilidade</span>
-            <h2 class="step-heading">Qual sua operadora atual?</h2>
-            <p class="step-subheading">Operadora utilizada atualmente. Selecione abaixo ou digite livremente.</p>
-
-            <!-- Quick chips para aceleração máxima -->
-            <div class="quick-chips">
-              <button type="button" class="chip-btn" data-carrier="Claro">Claro</button>
-              <button type="button" class="chip-btn" data-carrier="Vivo">Vivo</button>
-              <button type="button" class="chip-btn" data-carrier="TIM">TIM</button>
-              <button type="button" class="chip-btn" data-carrier="Correios">Correios</button>
-              <button type="button" class="chip-btn" data-carrier="Outra">Outra</button>
+          <!-- Campo 2: Número que deseja manter (com DDD) -->
+          <div class="modal-field-box">
+            <label for="numeroAtual" class="modal-field-label">Número que deseja manter (com DDD) <span class="req">*</span></label>
+            <div class="modal-input-wrap">
+              <span class="modal-input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </span>
+              <input type="tel" id="numeroAtual" class="modal-input" placeholder="(00) 00000-0000" inputmode="numeric" autocomplete="tel" required>
             </div>
+            <span class="field-error-msg" id="err-numeroAtual"></span>
+          </div>
 
-            <div class="field-box">
-              <label for="operadoraAtual" class="field-label">Operadora utilizada atualmente</label>
-              <div class="field-input-wrap">
-                <input type="text" id="operadoraAtual" class="app-input" placeholder="Ex: Claro, Vivo, TIM..." autocomplete="off">
-              </div>
-              <span class="field-error-msg" id="err-operadoraAtual"></span>
+          <!-- Campo 3: Operadora atual -->
+          <div class="modal-field-box">
+            <label for="operadoraAtual" class="modal-field-label">Operadora atual <span class="req">*</span></label>
+            <!-- Chips de seleção rápida -->
+            <div class="modal-quick-chips">
+              <button type="button" class="modal-chip-btn" data-carrier="Claro">Claro</button>
+              <button type="button" class="modal-chip-btn" data-carrier="Vivo">Vivo</button>
+              <button type="button" class="modal-chip-btn" data-carrier="TIM">TIM</button>
+              <button type="button" class="modal-chip-btn" data-carrier="Correios">Correios</button>
+              <button type="button" class="modal-chip-btn" data-carrier="Outra">Outra</button>
             </div>
+            <div class="modal-input-wrap">
+              <span class="modal-input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                  <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                  <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                </svg>
+              </span>
+              <input type="text" id="operadoraAtual" class="modal-input" placeholder="Ex: Claro, Vivo, TIM..." autocomplete="off" required>
+            </div>
+            <span class="field-error-msg" id="err-operadoraAtual"></span>
           </div>
 
-          <div class="step-footer">
-            <button type="button" class="btn-primary-app btn-step-continue" data-step-target="3">
-              <span>Continuar</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </section>
-
-        <!-- ETAPA 3: ESCOLHA DO TIPO DE CHIP (SEM EMOJIS, COM ÍCONES VETORIAIS) -->
-        <section class="checkout-step" id="appStep3" data-step="3">
-          <div class="step-content">
-            <span class="step-pill">Recebimento</span>
-            <h2 class="step-heading">Como deseja receber sua linha?</h2>
-            <p class="step-subheading">As duas opções são 100% gratuitas e incluem 11GB na rede 5G.</p>
-
-            <div class="cards-select-group">
-              <!-- Opção 1: Chip Físico (Acionado em Primeiro por Padrão) -->
-              <label class="card-radio-item active" for="radioFisico">
-                <input type="radio" id="radioFisico" name="tipoChip" value="Chip Físico" checked>
-                <div class="card-radio-body">
-                  <div class="card-radio-top">
-                    <span class="card-radio-bullet"></span>
-                    <span class="badge-accent">Frete Grátis</span>
+          <!-- Campo 4: Tipo de chip -->
+          <div class="modal-field-box">
+            <label class="modal-field-label">Tipo de chip <span class="req">*</span></label>
+            <div class="modal-chip-toggle-grid">
+              <label class="modal-chip-card active" for="radioChipFisico">
+                <input type="radio" id="radioChipFisico" name="tipoChip" value="Chip Físico" checked>
+                <div class="modal-chip-card-content">
+                  <div class="modal-chip-card-top">
+                    <span class="modal-radio-dot"></span>
+                    <span class="modal-chip-title">Chip Físico</span>
                   </div>
-                  <div class="card-radio-info">
-                    <strong class="card-radio-title">
-                      <svg class="chip-svg-badge" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4a2 2 0 0 1 2-2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4z"></path>
-                        <path d="M9 13h6M9 17h6M9 9h3"></path>
-                      </svg>
-                      <span>Chip Físico</span>
-                    </strong>
-                    <p class="card-radio-text">Enviamos o chip físico triplo corte para seu endereço sem nenhum custo de entrega.</p>
-                  </div>
+                  <span class="modal-chip-desc">Receba em casa sem custos</span>
                 </div>
               </label>
 
-              <!-- Opção 2: eSIM (Chip Virtual) -->
-              <label class="card-radio-item" for="radioEsim">
-                <input type="radio" id="radioEsim" name="tipoChip" value="eSIM (Chip Virtual)">
-                <div class="card-radio-body">
-                  <div class="card-radio-top">
-                    <span class="card-radio-bullet"></span>
-                    <span class="badge-subtle">Ativação Imediata</span>
+              <label class="modal-chip-card" for="radioChipEsim">
+                <input type="radio" id="radioChipEsim" name="tipoChip" value="eSIM (Virtual)">
+                <div class="modal-chip-card-content">
+                  <div class="modal-chip-card-top">
+                    <span class="modal-radio-dot"></span>
+                    <span class="modal-chip-title">eSIM (Virtual)</span>
                   </div>
-                  <div class="card-radio-info">
-                    <strong class="card-radio-title">
-                      <svg class="chip-svg-badge" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                        <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-                        <path d="M1 9h3M1 15h3M20 9h3M20 15h3M9 1v3M15 1v3M9 20v3M15 20v3"></path>
-                      </svg>
-                      <span>eSIM (Chip Virtual)</span>
-                    </strong>
-                    <p class="card-radio-text">Ativação via QR Code no mesmo dia diretamente no celular. Sem esperar entrega.</p>
-                  </div>
+                  <span class="modal-chip-desc">Ativação imediata no aparelho</span>
                 </div>
               </label>
             </div>
+            <span class="field-error-msg" id="err-tipoChip"></span>
           </div>
 
-          <div class="step-footer">
-            <button type="button" class="btn-primary-app btn-step-continue" data-step-target="4">
-              <span>Continuar</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </section>
-
-        <!-- ETAPA 4: NOME COMPLETO E EMAIL (ÚLTIMA ETAPA DO FORMULÁRIO) -->
-        <section class="checkout-step" id="appStep4" data-step="4">
-          <div class="step-content">
-            <span class="step-pill">Identificação</span>
-            <h2 class="step-heading">Informe seus dados</h2>
-            <p class="step-subheading">Para envio das instruções e acompanhamento da sua portabilidade.</p>
-
-            <div class="field-box">
-              <label for="nomeCompleto" class="field-label">Nome Completo</label>
-              <div class="field-input-wrap">
-                <input type="text" id="nomeCompleto" class="app-input" placeholder="Ex: Maria Silva Santos" autocomplete="name">
-              </div>
-              <span class="field-error-msg" id="err-nomeCompleto"></span>
+          <!-- Campo 5: CEP -->
+          <div class="modal-field-box">
+            <label for="cep" class="modal-field-label">CEP <span class="req">*</span></label>
+            <div class="modal-input-wrap">
+              <span class="modal-input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </span>
+              <input type="text" id="cep" class="modal-input" placeholder="00000-000" inputmode="numeric" maxlength="9" autocomplete="postal-code" required>
             </div>
-
-            <div class="field-box">
-              <label for="email" class="field-label">E-mail</label>
-              <div class="field-input-wrap">
-                <input type="email" id="email" class="app-input" placeholder="seuemail@exemplo.com" autocomplete="email">
-              </div>
-              <span class="field-error-msg" id="err-email"></span>
-            </div>
+            <span class="field-error-msg" id="err-cep"></span>
           </div>
 
-          <div class="step-footer">
-            <button type="button" class="btn-primary-app btn-step-continue" data-step-target="success">
-              <span>Continuar</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
-          </div>
-        </section>
-
-        <!-- TELA DE FINALIZAÇÃO / CONFIRMAÇÃO (PRÉ-WHATSAPP - SEM EMOJIS) -->
-        <section class="checkout-step" id="appStepSuccess" data-step="success">
-          <div class="step-content text-center">
-            <!-- Ícone de Sucesso Vetorial Elegante -->
-            <div class="success-app-badge">
-              <div class="success-badge-glow"></div>
-              <svg class="success-svg-check" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#00E575" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-
-            <h2 class="success-heading">Tudo pronto!</h2>
-            <p class="success-primary-msg">Sua solicitação de portabilidade foi iniciada.</p>
-            <p class="success-sub-msg">Agora vamos continuar pelo WhatsApp para finalizar sua ativação.</p>
-
-            <!-- Card Resumo Clean -->
-            <div class="summary-clean-box">
-              <div class="summary-clean-row">
-                <span>Nome:</span>
-                <strong id="sumNome">-</strong>
-              </div>
-              <div class="summary-clean-row">
-                <span>Email:</span>
-                <strong id="sumEmail">-</strong>
-              </div>
-              <div class="summary-clean-row">
-                <span>Número para portabilidade:</span>
-                <strong id="sumNumero">-</strong>
-              </div>
-              <div class="summary-clean-row">
-                <span>Operadora atual:</span>
-                <strong id="sumOperadora">-</strong>
-              </div>
-              <div class="summary-clean-row">
-                <span>Tipo de chip escolhido:</span>
-                <strong class="text-green" id="sumChip">-</strong>
-              </div>
-            </div>
-          </div>
-
-          <div class="step-footer flex-column">
-            <!-- Botão Verde Grande "Continuar no WhatsApp" (Dispara evento Lead) -->
-            <button type="button" class="btn-whatsapp-app btn-glow" id="btnContinuarWhatsApp">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <!-- Botão Final de Envio -->
+          <div class="modal-submit-area">
+            <button type="submit" class="btn-primary-app btn-glow btn-modal-submit" id="btnSubmitLead">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.031 2C6.502 2 2.008 6.495 2.008 12.025c0 1.84.498 3.567 1.364 5.064L2 22l5.064-1.328a9.988 9.988 0 0 0 4.967 1.353h.005c5.529 0 10.023-4.495 10.023-10.025C22.059 6.495 17.56 2 12.031 2zm5.82 14.192c-.244.685-1.424 1.31-1.956 1.355-.532.046-1.042.23-3.486-.73-2.97-1.166-4.887-4.184-5.034-4.38-.148-.198-1.206-1.606-1.206-3.064 0-1.458.765-2.176 1.036-2.472.272-.295.592-.37.79-.37.197 0 .395.002.568.01.184.01.433-.07.677.518.247.592.84 2.05.914 2.2.074.148.123.32.025.518-.099.198-.148.32-.296.494-.148.173-.31.388-.444.52-.148.148-.303.31-.13.606.173.296.768 1.267 1.647 2.05 1.134 1.01 2.09 1.323 2.386 1.47.296.148.468.123.642-.074.173-.198.74-1.085.938-1.455.197-.37.394-.32.666-.222.271.099 1.726.814 2.022.962.296.148.493.222.567.345.074.123.074.715-.17 1.4z"/>
               </svg>
-              <span>Continuar no WhatsApp</span>
+              <span>Quero fazer minha portabilidade</span>
             </button>
-            <button type="button" class="btn-app-edit" id="btnEditarApp">Editar dados informados</button>
+            <span class="modal-privacy-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Seus dados são enviados com segurança para o WhatsApp oficial.</span>
+            </span>
           </div>
-        </section>
+        </form>
 
-      </form>
-    </main>
+        <!-- Tela de Feedback Visual (Exibida após validação com sucesso) -->
+        <div class="lead-feedback-state" id="leadFeedbackState" style="display: none;">
+          <div class="lead-feedback-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00E575" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3 class="lead-feedback-title">Solicitação preparada!</h3>
+          <p class="lead-feedback-text">Estamos abrindo o WhatsApp para você continuar sua portabilidade.</p>
+          <div class="lead-feedback-spinner"></div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->

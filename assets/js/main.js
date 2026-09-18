@@ -1,35 +1,37 @@
 /**
- * iGreen Telecom - Checkout Inteligente de Portabilidade
- * Experiência em 2 Fases (Estilo App Fintech / Telecom)
+ * iGreen Telecom - Fluxo de Geração de Leads para Portabilidade
+ * Modal de Tela Única com Validação Estrita e Envio ao WhatsApp
  */
 
 (function () {
   'use strict';
 
   // =========================================================================
-  // 1. CONFIGURAÇÕES GERAIS
+  // 1. CONFIGURAÇÕES PRINCIPAIS (FACILMENTE EDITÁVEIS)
   // =========================================================================
-  // WhatsApp oficial de atendimento (DDI 55 + DDD + Número: 35 9875-4516)
-  const WHATSAPP_PHONE = '553598754516';
+  const WHATSAPP_NUMBER = '553598754516'; // Formato internacional DDI 55 + DDD + Número
+  const META_PIXEL_ID = '1787930898999589';
 
   // =========================================================================
-  // 2. INTEGRAÇÃO META ADS (META PIXEL ID: 1787930898999589)
+  // 2. INTEGRAÇÃO META ADS (META PIXEL)
   // =========================================================================
   let viewContentTracked = false;
   let initiateCheckoutTracked = false;
+  let leadTracked = false;
+  let isSubmitting = false;
 
   function trackMetaEvent(eventName, params = {}) {
     if (typeof window.fbq === 'function') {
       try {
         window.fbq('track', eventName, params);
-        console.log(`[Meta Pixel] Evento: ${eventName}`, params);
-      } catch (e) {
-        console.warn(`[Meta Pixel] Erro ao disparar ${eventName}:`, e);
+        console.log(`[Meta Pixel] Evento disparado: ${eventName}`, params);
+      } catch (err) {
+        console.warn(`[Meta Pixel] Falha ao disparar ${eventName}:`, err);
       }
     }
   }
 
-  // Disparo automático de ViewContent na visualização da oferta inicial
+  // Disparo de ViewContent na visualização da oferta
   function trackViewContent() {
     if (!viewContentTracked) {
       viewContentTracked = true;
@@ -40,62 +42,90 @@
     }
   }
 
-  // Disparo de InitiateCheckout ao clicar em "Começar minha portabilidade"
+  // Disparo de InitiateCheckout ao abrir o modal
   function trackInitiateCheckout() {
     if (!initiateCheckoutTracked) {
       initiateCheckoutTracked = true;
       trackMetaEvent('InitiateCheckout', {
-        content_name: 'Portabilidade iGreen Telecom'
+        content_name: 'Formulário Portabilidade iGreen'
       });
     }
   }
 
-  // =========================================================================
-  // 3. ESTADO DO FORMULÁRIO E DADOS
-  // =========================================================================
-  const formData = {
-    numeroAtual: '',
-    operadoraAtual: '',
-    tipoChip: 'Chip Físico',
-    nomeCompleto: '',
-    email: ''
-  };
-
-  let currentStep = 1; // 1 a 4 ou 'success'
-
-  // Elementos do DOM
-  const phaseOffer = document.getElementById('phaseOffer');
-  const phaseCheckout = document.getElementById('phaseCheckout');
-  const btnStartCheckout = document.getElementById('btnStartCheckout');
-  const btnStepBack = document.getElementById('btnStepBack');
-  const stepCounterText = document.getElementById('stepCounterText');
-  const appProgressFill = document.getElementById('appProgressFill');
+  // Disparo exclusivo do evento LEAD após validação completa
+  function trackLeadEvent() {
+    if (!leadTracked) {
+      leadTracked = true;
+      trackMetaEvent('Lead');
+    }
+  }
 
   // =========================================================================
-  // 4. TRANSIÇÃO ENTRE FASE 1 (OFERTA) E FASE 2 (CHECKOUT APP)
+  // 3. ELEMENTOS DO DOM
   // =========================================================================
-  function enterCheckoutPhase() {
+  const btnOpenLeadModal = document.getElementById('btnStartCheckout');
+  const leadModalBackdrop = document.getElementById('leadModalBackdrop');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const leadForm = document.getElementById('leadPortabilidadeForm');
+  const leadFeedbackState = document.getElementById('leadFeedbackState');
+
+  const inputNome = document.getElementById('nomeCompleto');
+  const inputNumero = document.getElementById('numeroAtual');
+  const inputOperadora = document.getElementById('operadoraAtual');
+  const inputCep = document.getElementById('cep');
+
+  // =========================================================================
+  // 4. CONTROLE DO MODAL (ABRIR / FECHAR)
+  // =========================================================================
+  function openModal() {
+    if (!leadModalBackdrop) return;
     trackInitiateCheckout();
 
-    // Anima saída da Fase 1
-    phaseOffer.classList.add('is-hidden');
+    leadModalBackdrop.classList.add('is-active');
+    leadModalBackdrop.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
 
-    // Ativa Fase 2 (Checkout App Fullscreen 100dvh)
-    phaseCheckout.classList.add('is-visible');
-    phaseCheckout.setAttribute('aria-hidden', 'false');
-
-    // Inicia no passo 1 com foco imediato
-    goToStep(1);
+    // Autofoco no primeiro campo com pequeno delay para fluidez
+    setTimeout(() => {
+      if (inputNome) inputNome.focus();
+    }, 200);
   }
 
-  function returnToOfferPhase() {
-    phaseCheckout.classList.remove('is-visible');
-    phaseCheckout.setAttribute('aria-hidden', 'true');
-    phaseOffer.classList.remove('is-hidden');
+  function closeModal() {
+    if (!leadModalBackdrop) return;
+    leadModalBackdrop.classList.remove('is-active');
+    leadModalBackdrop.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function setupModalEvents() {
+    if (btnOpenLeadModal) {
+      btnOpenLeadModal.addEventListener('click', openModal);
+    }
+
+    if (btnCloseModal) {
+      btnCloseModal.addEventListener('click', closeModal);
+    }
+
+    // Fechar ao clicar no backdrop escuro (fora do card)
+    if (leadModalBackdrop) {
+      leadModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === leadModalBackdrop) {
+          closeModal();
+        }
+      });
+    }
+
+    // Fechar com a tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && leadModalBackdrop && leadModalBackdrop.classList.contains('is-active')) {
+        closeModal();
+      }
+    });
   }
 
   // =========================================================================
-  // 5. MÁSCARA DE TELEFONE
+  // 5. MÁSCARAS AUTOMÁTICAS (TELEFONE E CEP)
   // =========================================================================
   function maskPhone(val) {
     let digits = val.replace(/\D/g, '').substring(0, 11);
@@ -111,67 +141,44 @@
     return '';
   }
 
+  function maskCEP(val) {
+    let digits = val.replace(/\D/g, '').substring(0, 8);
+    if (digits.length > 5) {
+      return digits.replace(/^(\d{5})(\d{1,3})$/, '$1-$2');
+    }
+    return digits;
+  }
+
   function setupInputMasks() {
-    const telInput = document.getElementById('numeroAtual');
-
-    if (telInput) {
-      telInput.addEventListener('input', (e) => {
+    if (inputNumero) {
+      inputNumero.addEventListener('input', (e) => {
         e.target.value = maskPhone(e.target.value);
-        clearError('numeroAtual');
+        clearFieldError('numeroAtual');
       });
     }
 
-    // Limpeza de erros em outros inputs
-    document.querySelectorAll('.app-input').forEach((input) => {
-      input.addEventListener('input', () => {
-        clearError(input.id);
+    if (inputCep) {
+      inputCep.addEventListener('input', (e) => {
+        e.target.value = maskCEP(e.target.value);
+        clearFieldError('cep');
       });
-    });
-  }
-
-  // =========================================================================
-  // 6. VALIDAÇÕES (TELEFONE, EMAIL)
-  // =========================================================================
-  function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).trim().toLowerCase());
-  }
-
-  function validatePhone(phone) {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length < 10 || digits.length > 11) return false;
-    const ddd = parseInt(digits.substring(0, 2), 10);
-    return ddd >= 11 && ddd <= 99;
-  }
-
-  function showError(fieldId, message) {
-    const input = document.getElementById(fieldId);
-    const msgEl = document.getElementById(`err-${fieldId}`);
-    if (input) input.classList.add('is-invalid');
-    if (msgEl) {
-      msgEl.textContent = message;
-      msgEl.classList.add('visible');
     }
-  }
 
-  function clearError(fieldId) {
-    const input = document.getElementById(fieldId);
-    const msgEl = document.getElementById(`err-${fieldId}`);
-    if (input) input.classList.remove('is-invalid');
-    if (msgEl) {
-      msgEl.textContent = '';
-      msgEl.classList.remove('visible');
+    if (inputNome) {
+      inputNome.addEventListener('input', () => clearFieldError('nomeCompleto'));
+    }
+
+    if (inputOperadora) {
+      inputOperadora.addEventListener('input', () => clearFieldError('operadoraAtual'));
     }
   }
 
   // =========================================================================
-  // 7. CONTROLE DOS CHIPS E SELETORES
+  // 6. QUICK CHIPS E CARDS DE SELEÇÃO DE CHIP
   // =========================================================================
-  function setupInteractiveOptions() {
-    // Chips de operadora rápida (Etapa 2)
-    const chips = document.querySelectorAll('.chip-btn');
-    const operadoraInput = document.getElementById('operadoraAtual');
-
+  function setupFormInteractions() {
+    // Chips de operadora rápida
+    const chips = document.querySelectorAll('.modal-chip-btn');
     chips.forEach((chip) => {
       chip.addEventListener('click', () => {
         chips.forEach((c) => c.classList.remove('selected'));
@@ -179,18 +186,18 @@
         const carrier = chip.getAttribute('data-carrier');
 
         if (carrier === 'Outra') {
-          operadoraInput.value = '';
-          operadoraInput.focus();
+          inputOperadora.value = '';
+          inputOperadora.focus();
         } else {
-          operadoraInput.value = carrier;
+          inputOperadora.value = carrier;
         }
-        clearError('operadoraAtual');
+        clearFieldError('operadoraAtual');
       });
     });
 
-    if (operadoraInput) {
-      operadoraInput.addEventListener('input', () => {
-        const typed = operadoraInput.value.trim().toLowerCase();
+    if (inputOperadora) {
+      inputOperadora.addEventListener('input', () => {
+        const typed = inputOperadora.value.trim().toLowerCase();
         chips.forEach((c) => {
           if (c.getAttribute('data-carrier').toLowerCase() === typed) {
             c.classList.add('selected');
@@ -201,236 +208,180 @@
       });
     }
 
-    // Cards de opção de chip: Físico vs eSIM (Etapa 3)
-    const radioCards = document.querySelectorAll('.card-radio-item');
-    radioCards.forEach((card) => {
+    // Toggle cards: Chip Físico vs eSIM
+    const chipCards = document.querySelectorAll('.modal-chip-card');
+    chipCards.forEach((card) => {
       const radio = card.querySelector('input[type="radio"]');
       card.addEventListener('click', () => {
-        radioCards.forEach((c) => c.classList.remove('active'));
+        chipCards.forEach((c) => c.classList.remove('active'));
         card.classList.add('active');
-        if (radio) {
-          radio.checked = true;
-          formData.tipoChip = radio.value;
-        }
+        if (radio) radio.checked = true;
+        clearFieldError('tipoChip');
       });
     });
   }
 
   // =========================================================================
-  // 8. VALIDAÇÃO INDIVIDUAL DE CADA ETAPA (4 ETAPAS)
+  // 7. VALIDAÇÃO DOS CAMPOS
   // =========================================================================
-  function validateStep(stepNum) {
+  function showFieldError(fieldId, message) {
+    const fieldInput = document.getElementById(fieldId);
+    const errEl = document.getElementById(`err-${fieldId}`);
+    if (fieldInput) fieldInput.classList.add('is-invalid');
+    if (errEl) {
+      errEl.textContent = message;
+      errEl.classList.add('visible');
+    }
+  }
+
+  function clearFieldError(fieldId) {
+    const fieldInput = document.getElementById(fieldId);
+    const errEl = document.getElementById(`err-${fieldId}`);
+    if (fieldInput) fieldInput.classList.remove('is-invalid');
+    if (errEl) {
+      errEl.textContent = '';
+      errEl.classList.remove('visible');
+    }
+  }
+
+  function validateLeadForm() {
     let isValid = true;
-    let fieldToFocus = null;
+    let firstInvalidField = null;
 
-    if (stepNum === 1) {
-      const input = document.getElementById('numeroAtual');
-      if (!validatePhone(input.value)) {
-        showError('numeroAtual', 'Informe um número com DDD válido (Ex: 11 99999-9999).');
+    // 1. Nome completo
+    const nomeVal = inputNome ? inputNome.value.trim() : '';
+    const nomeParts = nomeVal.split(/\s+/);
+    if (nomeParts.length < 2 || nomeParts[1].length < 2) {
+      showFieldError('nomeCompleto', 'Informe seu nome e sobrenome completos.');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = inputNome;
+    } else {
+      clearFieldError('nomeCompleto');
+    }
+
+    // 2. Número que deseja manter (com DDD)
+    const telDigits = inputNumero ? inputNumero.value.replace(/\D/g, '') : '';
+    if (telDigits.length < 10 || telDigits.length > 11) {
+      showFieldError('numeroAtual', 'Informe um número com DDD válido (Ex: 11 99999-9999).');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = inputNumero;
+    } else {
+      const ddd = parseInt(telDigits.substring(0, 2), 10);
+      if (ddd < 11 || ddd > 99) {
+        showFieldError('numeroAtual', 'DDD inválido. Verifique o número digitado.');
         isValid = false;
-        fieldToFocus = input;
+        if (!firstInvalidField) firstInvalidField = inputNumero;
       } else {
-        formData.numeroAtual = input.value.trim();
+        clearFieldError('numeroAtual');
       }
     }
 
-    else if (stepNum === 2) {
-      const input = document.getElementById('operadoraAtual');
-      if (input.value.trim().length < 2) {
-        showError('operadoraAtual', 'Informe o nome da sua operadora atual.');
-        isValid = false;
-        fieldToFocus = input;
-      } else {
-        formData.operadoraAtual = input.value.trim();
-      }
+    // 3. Operadora atual
+    const operadoraVal = inputOperadora ? inputOperadora.value.trim() : '';
+    if (operadoraVal.length < 2) {
+      showFieldError('operadoraAtual', 'Informe sua operadora atual.');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = inputOperadora;
+    } else {
+      clearFieldError('operadoraAtual');
     }
 
-    else if (stepNum === 3) {
-      const radio = document.querySelector('input[name="tipoChip"]:checked');
-      if (radio) {
-        formData.tipoChip = radio.value;
-      }
+    // 4. Tipo de chip
+    const chipRadio = document.querySelector('input[name="tipoChip"]:checked');
+    if (!chipRadio) {
+      showFieldError('tipoChip', 'Selecione o tipo de chip desejado.');
+      isValid = false;
+    } else {
+      clearFieldError('tipoChip');
     }
 
-    else if (stepNum === 4) {
-      const nomeInput = document.getElementById('nomeCompleto');
-      const emailInput = document.getElementById('email');
-
-      const parts = nomeInput.value.trim().split(/\s+/);
-      if (parts.length < 2 || parts[1].length < 2) {
-        showError('nomeCompleto', 'Informe seu nome e sobrenome completos.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = nomeInput;
-      } else {
-        formData.nomeCompleto = nomeInput.value.trim();
-      }
-
-      if (!validateEmail(emailInput.value)) {
-        showError('email', 'Informe um endereço de e-mail válido.');
-        isValid = false;
-        if (!fieldToFocus) fieldToFocus = emailInput;
-      } else {
-        formData.email = emailInput.value.trim();
-      }
+    // 5. CEP
+    const cepDigits = inputCep ? inputCep.value.replace(/\D/g, '') : '';
+    if (cepDigits.length !== 8) {
+      showFieldError('cep', 'Informe um CEP válido com 8 dígitos.');
+      isValid = false;
+      if (!firstInvalidField) firstInvalidField = inputCep;
+    } else {
+      clearFieldError('cep');
     }
 
-    if (!isValid && fieldToFocus) {
-      fieldToFocus.focus();
+    if (!isValid && firstInvalidField) {
+      firstInvalidField.focus();
     }
 
     return isValid;
   }
 
   // =========================================================================
-  // 9. TRANSIÇÃO DE TELAS NO CHECKOUT (1 a 4 e TELA DE SUCESSO)
+  // 8. ENVIO DO FORMULÁRIO, DISPARO DO LEAD E REDIRECIONAMENTO AO WHATSAPP
   // =========================================================================
-  function goToStep(target) {
-    const allSteps = document.querySelectorAll('.checkout-step');
-    allSteps.forEach((s) => s.classList.remove('active'));
+  function setupFormSubmission() {
+    if (!leadForm) return;
 
-    if (target === 'success') {
-      currentStep = 'success';
-      const successStep = document.getElementById('appStepSuccess');
-      if (successStep) successStep.classList.add('active');
+    leadForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-      stepCounterText.textContent = 'Confirmação Final';
-      appProgressFill.style.width = '100%';
+      // Proteção contra múltiplos cliques
+      if (isSubmitting) return;
 
-      populateSummaryBox();
-    } else {
-      const num = parseInt(target, 10);
-      currentStep = num;
-      const targetStep = document.getElementById(`appStep${num}`);
-      if (targetStep) targetStep.classList.add('active');
+      // Validação de todos os campos
+      const isFormValid = validateLeadForm();
+      if (!isFormValid) {
+        return; // NÃO dispara o Lead e NÃO prossegue se houver erro
+      }
 
-      // Atualiza contador e barra de progresso (4 etapas = 25%, 50%, 75%, 100%)
-      const progressPercentage = Math.round((num / 4) * 100);
-      stepCounterText.textContent = `Etapa ${num} de 4`;
-      appProgressFill.style.width = `${progressPercentage}%`;
+      isSubmitting = true;
 
-      // Autofoco inteligente no primeiro input disponível
+      // 1. Disparo do Evento LEAD no Meta Pixel (somente após validação completa)
+      trackLeadEvent();
+
+      // 2. Coleta dos dados formatados
+      const nomeFinal = inputNome.value.trim();
+      const numeroFinal = inputNumero.value.trim();
+      const operadoraFinal = inputOperadora.value.trim();
+      const tipoChipFinal = document.querySelector('input[name="tipoChip"]:checked').value;
+      const cepFinal = inputCep.value.trim();
+
+      // 3. Montagem da mensagem no modelo exato solicitado
+      const whatsappMessage = 
+`Olá! Quero fazer minha portabilidade para a iGreen Telecom. 💚
+
+*Dados da portabilidade:*
+
+Nome: ${nomeFinal}
+Número que quero manter: ${numeroFinal}
+Operadora atual: ${operadoraFinal}
+Tipo de chip: ${tipoChipFinal}
+CEP: ${cepFinal}
+
+Quero dar continuidade à minha portabilidade e receber os 11GB grátis.`;
+
+      // 4. Exibição rápida do feedback visual após envio
+      if (leadForm && leadFeedbackState) {
+        leadForm.style.display = 'none';
+        leadFeedbackState.style.display = 'flex';
+      }
+
+      // 5. Redirecionamento seguro para o WhatsApp
+      const encodedMsg = encodeURIComponent(whatsappMessage);
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`;
+
+      // Aguarda 600ms para o usuário visualizar o feedback de sucesso
       setTimeout(() => {
-        const input = targetStep.querySelector('input:not([type="radio"])');
-        if (input) input.focus();
-      }, 150);
-    }
-  }
-
-  function populateSummaryBox() {
-    const sumNome = document.getElementById('sumNome');
-    const sumEmail = document.getElementById('sumEmail');
-    const sumNumero = document.getElementById('sumNumero');
-    const sumOperadora = document.getElementById('sumOperadora');
-    const sumChip = document.getElementById('sumChip');
-
-    if (sumNome) sumNome.textContent = formData.nomeCompleto || '-';
-    if (sumEmail) sumEmail.textContent = formData.email || '-';
-    if (sumNumero) sumNumero.textContent = formData.numeroAtual || '-';
-    if (sumOperadora) sumOperadora.textContent = formData.operadoraAtual || '-';
-    if (sumChip) sumChip.textContent = formData.tipoChip || '-';
-  }
-
-  // =========================================================================
-  // 10. GESTÃO DOS BOTÕES DE NAVEGAÇÃO E TECLADO ENTER
-  // =========================================================================
-  function setupNavigationControls() {
-    // Botão "Começar minha portabilidade" (Fase 1 -> Fase 2)
-    if (btnStartCheckout) {
-      btnStartCheckout.addEventListener('click', enterCheckoutPhase);
-    }
-
-    // Botões "Continuar" de cada etapa
-    const continueButtons = document.querySelectorAll('.btn-step-continue');
-    continueButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-step-target');
-        const currentStepEl = btn.closest('.checkout-step');
-        const stepNum = parseInt(currentStepEl.getAttribute('data-step'), 10);
-
-        if (validateStep(stepNum)) {
-          goToStep(target);
-        }
-      });
-    });
-
-    // Tecla Enter avança automaticamente no input ativo
-    document.querySelectorAll('.app-input').forEach((input) => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const activeStep = input.closest('.checkout-step');
-          if (activeStep) {
-            const continueBtn = activeStep.querySelector('.btn-step-continue');
-            if (continueBtn) continueBtn.click();
-          }
-        }
-      });
-    });
-
-    // Botão "Voltar" do topo
-    if (btnStepBack) {
-      btnStepBack.addEventListener('click', () => {
-        if (currentStep === 'success') {
-          goToStep(4);
-        } else if (currentStep === 1) {
-          returnToOfferPhase();
-        } else if (typeof currentStep === 'number' && currentStep > 1) {
-          goToStep(currentStep - 1);
-        }
-      });
-    }
-
-    // Botão "Editar dados informados" na tela de sucesso
-    const btnEditar = document.getElementById('btnEditarApp');
-    if (btnEditar) {
-      btnEditar.addEventListener('click', () => {
-        goToStep(1);
-      });
-    }
-  }
-
-  // =========================================================================
-  // 11. FINALIZAÇÃO NO WHATSAPP (EVENTO LEAD)
-  // =========================================================================
-  function setupWhatsAppTrigger() {
-    const btnWhatsApp = document.getElementById('btnContinuarWhatsApp');
-    if (!btnWhatsApp) return;
-
-    btnWhatsApp.addEventListener('click', () => {
-      // 1. Disparo do Evento LEAD no Meta Pixel
-      trackMetaEvent('Lead', {
-        content_name: 'Lead Portabilidade iGreen Telecom'
-      });
-
-      // 2. Montagem da mensagem formatada no padrão exato solicitado
-      const textMessage = 
-`Olá! Quero fazer minha portabilidade para a iGreen Telecom.
-
-Nome: ${formData.nomeCompleto}
-Email: ${formData.email}
-Número para portabilidade: ${formData.numeroAtual}
-Operadora atual: ${formData.operadoraAtual}
-Tipo de chip escolhido: ${formData.tipoChip}
-
-Gostaria de finalizar minha ativação.`;
-
-      // 3. URL codificada e redirecionamento
-      const encodedMsg = encodeURIComponent(textMessage);
-      const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMsg}`;
-
-      window.open(whatsappUrl, '_blank');
+        window.location.href = whatsappUrl;
+      }, 600);
     });
   }
 
   // =========================================================================
-  // 12. INICIALIZAÇÃO
+  // 9. INICIALIZAÇÃO
   // =========================================================================
   document.addEventListener('DOMContentLoaded', () => {
     trackViewContent();
+    setupModalEvents();
     setupInputMasks();
-    setupInteractiveOptions();
-    setupNavigationControls();
-    setupWhatsAppTrigger();
+    setupFormInteractions();
+    setupFormSubmission();
   });
 
 })();
