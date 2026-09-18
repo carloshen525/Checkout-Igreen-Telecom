@@ -31,6 +31,7 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('set', 'autoConfig', false, '1787930898999589');
     fbq('init', '1787930898999589');
     fbq('track', 'PageView');
   </script>
@@ -243,7 +244,7 @@
 
       <!-- Botão CTA Principal da Fase 1 -->
       <footer class="offer-footer">
-        <button type="button" class="btn-primary-app btn-glow" id="btnStartCheckout">
+        <button type="button" class="btn-primary-app btn-glow" id="btnStartCheckout" data-track="false">
           <span>Quero ganhar meus 11GB grátis</span>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="5" y1="12" x2="19" y2="12"></line>

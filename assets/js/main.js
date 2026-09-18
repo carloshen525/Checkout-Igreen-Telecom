@@ -16,7 +16,6 @@
   // 2. INTEGRAÇÃO META ADS (META PIXEL)
   // =========================================================================
   let viewContentTracked = false;
-  let initiateCheckoutTracked = false;
   let leadTracked = false;
   let isSubmitting = false;
 
@@ -42,17 +41,7 @@
     }
   }
 
-  // Disparo de InitiateCheckout ao abrir o modal
-  function trackInitiateCheckout() {
-    if (!initiateCheckoutTracked) {
-      initiateCheckoutTracked = true;
-      trackMetaEvent('InitiateCheckout', {
-        content_name: 'Formulário Portabilidade iGreen'
-      });
-    }
-  }
-
-  // Disparo exclusivo do evento LEAD após validação completa
+  // Disparo exclusivo do evento LEAD no clique do botão de WhatsApp (após validação completa)
   function trackLeadEvent() {
     if (!leadTracked) {
       leadTracked = true;
@@ -79,7 +68,7 @@
   // =========================================================================
   function openModal() {
     if (!leadModalBackdrop) return;
-    trackInitiateCheckout();
+    // O primeiro botão apenas abre o modal. NENHUM evento de Lead ou checkout é disparado aqui!
 
     leadModalBackdrop.classList.add('is-active');
     leadModalBackdrop.setAttribute('aria-hidden', 'false');
