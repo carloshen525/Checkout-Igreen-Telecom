@@ -13,11 +13,35 @@
   const META_PIXEL_ID = '1787930898999589';
 
   // =========================================================================
-  // 2. INTEGRAÇÃO META ADS (META PIXEL)
+  // 2. INTEGRAÇÃO META ADS (META PIXEL COM PROTEÇÃO ABSOLUTA CONTRA DISPARO NO 1º BOTÃO)
   // =========================================================================
   let viewContentTracked = false;
   let leadTracked = false;
   let isSubmitting = false;
+  let allowLeadEvent = false; // Flag estrita: 'Lead' só dispara com autorização explícita do WhatsApp
+
+  // Proteção em nível de API: intercepta chamadas ao fbq para impedir que o Meta Ads
+  // ou ferramentas automáticas disparem 'Lead' sem autorização no primeiro botão
+  function installPixelGuard() {
+    if (typeof window.fbq === 'function') {
+      const originalFbq = window.fbq;
+      window.fbq = function () {
+        const args = Array.prototype.slice.call(arguments);
+        // Se alguma ferramenta de terceiros ou clique automático tentar disparar Lead:
+        if (args[0] === 'track' && args[1] === 'Lead' && !allowLeadEvent) {
+          console.warn('[Meta Pixel Guard] Disparo não autorizado de Lead bloqueado!');
+          return;
+        }
+        return originalFbq.apply(this, args);
+      };
+
+      for (let prop in originalFbq) {
+        if (Object.prototype.hasOwnProperty.call(originalFbq, prop)) {
+          window.fbq[prop] = originalFbq[prop];
+        }
+      }
+    }
+  }
 
   function trackMetaEvent(eventName, params = {}) {
     if (typeof window.fbq === 'function') {
@@ -45,14 +69,16 @@
   function trackLeadEvent() {
     if (!leadTracked) {
       leadTracked = true;
+      allowLeadEvent = true; // Autoriza temporariamente o disparo
       trackMetaEvent('Lead');
+      allowLeadEvent = false; // Fecha imediatamente a autorização
     }
   }
 
   // =========================================================================
   // 3. ELEMENTOS DO DOM
   // =========================================================================
-  const btnOpenLeadModal = document.getElementById('btnStartCheckout');
+  const btnOpenLeadModal = document.getElementById('btnOpenOfferModal') || document.getElementById('btnStartCheckout');
   const leadModalBackdrop = document.getElementById('leadModalBackdrop');
   const btnCloseModal = document.getElementById('btnCloseModal');
   const leadForm = document.getElementById('leadPortabilidadeForm');
@@ -68,7 +94,7 @@
   // =========================================================================
   function openModal() {
     if (!leadModalBackdrop) return;
-    // O primeiro botão apenas abre o modal. NENHUM evento de Lead ou checkout é disparado aqui!
+    // O primeiro botão apenas abre o modal. ZERO eventos disparados aqui!
 
     leadModalBackdrop.classList.add('is-active');
     leadModalBackdrop.setAttribute('aria-hidden', 'false');
@@ -89,7 +115,26 @@
 
   function setupModalEvents() {
     if (btnOpenLeadModal) {
-      btnOpenLeadModal.addEventListener('click', openModal);
+      // Interceptação em fase de captura (useCapture: true) e stopPropagation:
+      // Garante que o evento de clique NÃO se propague para ouvintes globais do Meta Pixel
+      btnOpenLeadModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        openModal();
+      }, true);
+
+      btnOpenLeadModal.addEventListener('mousedown', (e) => e.stopPropagation(), true);
+      btnOpenLeadModal.addEventListener('pointerdown', (e) => e.stopPropagation(), true);
+
+      // Suporte a teclado (Enter ou Barra de Espaço)
+      btnOpenLeadModal.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          openModal();
+        }
+      });
     }
 
     if (btnCloseModal) {
@@ -365,7 +410,10 @@ Quero dar continuidade à minha portabilidade e receber os 11GB grátis.`;
   // =========================================================================
   // 9. INICIALIZAÇÃO
   // =========================================================================
+  installPixelGuard();
+
   document.addEventListener('DOMContentLoaded', () => {
+    installPixelGuard();
     trackViewContent();
     setupModalEvents();
     setupInputMasks();
